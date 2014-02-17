@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">    
+    <id>@project@</id>
+    <version>@build.number@</version>
+    <authors>Marcin Deptuła, Wojciech Stokowiec, Kamil Borowski</authors>
+    <owners>Dom Maklerski mBanku S.A.</owners>
+    <summary>@summary@</summary>
+    <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0.html</licenseUrl>
+    <projectUrl>https://github.com/mForex/mForex.API</projectUrl>
+    <iconUrl>http://mforex.pl/Media/Default/images/mLogo.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>@description@</description>
+    <releaseNotes>@releaseNotes@</releaseNotes>
+    <copyright>Dom Maklerski mBanku S.A. 2013</copyright>    
+    <tags>Forex mForex API</tags>
+    @dependencies@
+  </metadata>
+</package>
