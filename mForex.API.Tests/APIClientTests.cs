@@ -13,7 +13,6 @@ using mForex.API.Tests.Utils;
 
 namespace mForex.API.Tests
 {
-
     public class APIClientTests
     {
         protected Mock<IApiConnection> moq_connection;

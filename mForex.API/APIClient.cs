@@ -17,7 +17,6 @@ namespace mForex.API
     /// </summary>
     public class APIClient : ITradeProvider
     {
-
         #region Private Fields
         private int reqId;
         private Dictionary<int, object> tcsByRequest;
@@ -28,6 +27,8 @@ namespace mForex.API
         private Action<APINetworkPacket>[] packetHandlers;
 
         #endregion Private Fields
+
+
 
         private IApiConnection apiConnection;
 
