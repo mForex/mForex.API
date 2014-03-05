@@ -34,8 +34,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="mForex.API">
-      <HintPath>..\..\packages\mForex.API.0.9.4.22383\lib\net45\mForex.API.dll</HintPath>
+    <Reference Include="mForex.API, Version=0.9.5.30038, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\mForex.API.0.9.5.30038\lib\net45\mForex.API.dll</HintPath>
     </Reference>
     <Reference Include="protobuf-net">
       <HintPath>..\..\packages\protobuf-net.2.0.0.668\lib\net40\protobuf-net.dll</HintPath>

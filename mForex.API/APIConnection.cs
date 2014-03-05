@@ -132,7 +132,7 @@ namespace mForex.API
                 var secureStream = new SslStream(tmpStream, false);
                 try
                 {
-                    secureStream.AuthenticateAsClient("www.mforex.pl");
+                    secureStream.AuthenticateAsClient("mobi.mdm.pl");
                 }
                 catch (Exception exc)
                 {

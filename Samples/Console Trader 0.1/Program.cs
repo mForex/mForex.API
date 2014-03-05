@@ -9,7 +9,7 @@ namespace Console_Trader_0._1
         static void Main(string[] args)
         {
 
-            var client = new APIClient(new APIConnection(ServerType.Demo));
+            var client = new APIClient(new APIConnection(ServerType.Real));
 
             client.Connect().Wait();
             Console.WriteLine("Connected");

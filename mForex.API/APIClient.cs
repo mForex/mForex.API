@@ -17,7 +17,6 @@ namespace mForex.API
     /// </summary>
     public class APIClient : ITradeProvider
     {
-        #region Private Fields
         private int reqId;
         private Dictionary<int, object> tcsByRequest;
         private Dictionary<int, Type> tcsTypes;
@@ -26,18 +25,14 @@ namespace mForex.API
 
         private Action<APINetworkPacket>[] packetHandlers;
 
-        #endregion Private Fields
-
 
 
         private IApiConnection apiConnection;
 
-        #region Properties
         /// <summary>
         /// Provides interface for managing orders.
         /// </summary>
         public ITradeProvider Trade { get { return this; } }
-        #endregion Properties
 
         /// <summary>
         /// Occurs when new ticks are received from the server.
@@ -66,7 +61,6 @@ namespace mForex.API
         /// </summary>
         public event Action<TradeUpdatePacket> TradeUpdate;
 
-        #region Constructors
         /// <summary>
         /// Initialises a new instance the api network client class. 
         /// </summary>
@@ -96,7 +90,6 @@ namespace mForex.API
             InitialiseHandlers();
             StartHeartBeatTimer();
         }
-        #endregion Constructors
 
         /// <summary>
         /// Initialises a connection to the server. 
@@ -119,7 +112,6 @@ namespace mForex.API
             apiConnection.Disconnect();
         }
 
-        #region Requests
         /// <summary>
         /// Sends login request to the server.
         /// </summary>
@@ -303,9 +295,6 @@ namespace mForex.API
             return task;
         }
 
-        #endregion Requests
-
-        #region Private Methods
 
         #region Packet Handling
         private void HandlePacket(APINetworkPacket genericPacket)
@@ -363,7 +352,7 @@ namespace mForex.API
         }
         #endregion
 
-        #region Event Risers
+        #region Events
         private void OnTicks(Tick[] ticks)
         {
             var h = Ticks;
@@ -475,7 +464,5 @@ namespace mForex.API
         {
             return System.Threading.Interlocked.Increment(ref reqId);
         }
-
-        #endregion Private Methods
     }
 }
