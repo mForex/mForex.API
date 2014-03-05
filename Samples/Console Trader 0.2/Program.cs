@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Threading.Tasks;
 using mForex.API;
+using mForex.API.Packets;
 
-namespace Console_Trader_0._1
+namespace Console_Trader_0._2
 {
     class Program
     {
+
         static void Main(string[] args)
         {
 
@@ -18,14 +20,17 @@ namespace Console_Trader_0._1
             {
                 var resp = r.Result;
                 Console.WriteLine("Login response: {0} - {1}", resp.Login, resp.LoggedIn);
-            });
 
-            client.Ticks += ticks =>
-            {
-                foreach (var tick in ticks)
-                    if (tick.Symbol == "EURUSD")
-                        Console.WriteLine("{0} \t {1}/{2} \t ({3})", tick.Symbol, tick.Bid, tick.Ask, tick.Time);
-            };
+                TradeCommand command = TradeCommand.Buy;
+                string instrument = "EURUSD";
+                double volume = 0.1;
+
+                client.Trade.OpenOrder(instrument, command, 0, 0, 0, volume).ContinueWith(p =>
+                    {
+                        Console.WriteLine("Trade response {0} for order {1}", p.Result.Order, p.Result.ErrorCode);
+                    }
+                );
+            });
 
             WaitForKey();
         }
