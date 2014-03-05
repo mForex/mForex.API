@@ -15,9 +15,8 @@ namespace mForex.API
 {
     public class APIConnection : IApiConnection
     {
-
-        #region Private Fields
-        private IPEndPoint serverEndPoint;
+        private string serverHost;
+        private int serverPort;
         private bool useSsl;
 
         private TcpClient tcpClient;
@@ -34,24 +33,11 @@ namespace mForex.API
 
         private bool disconnectedOccured;
 
-        #endregion Private Fields
 
-        #region Events
         public event Action<Exception> Disconnected;
         public event Action<APINetworkPacket> PacketReceived;
-        #endregion Events
 
-        #region Constructors
-        /// <summary>
-        /// Initialises a new instance the api connection class. 
-        /// </summary>
-        /// <param name="endPoint"></param>
-        /// <param name="useSsl"></param>
-        public APIConnection(IPEndPoint endPoint, bool useSsl)
-        {
-            Initialise(endPoint, useSsl);
-        }
-
+        
         /// <summary>
         /// Initialises a new instance the api connection class. 
         /// </summary>
@@ -61,22 +47,21 @@ namespace mForex.API
             switch (server)
             { 
                 case ServerType.Demo:
-                    Initialise(new IPEndPoint(IPAddress.Loopback, 5615), false);
+                    Initialise("www.mforex.pl", 6615, true);
                     break;
                 
                 case ServerType.Real:
-                    Initialise(new IPEndPoint(IPAddress.Loopback, 6615), true);
+                    Initialise("www.mforex.pl", 5615, true);
                     break;
             }
         }
-        #endregion Constructors
 
         public async Task Connect()
         {
             VerifyCanConnect();
             canConnect = false;
 
-            await SetupClientAndStream();//d
+            await SetupClientAndStream();
 
             Task.Run(new Action(ReadLoop)).Ignore();
         }
@@ -103,10 +88,10 @@ namespace mForex.API
             SendPacket(serializer.SerializeWithHeader(packet));         
         }
 
-        #region Private Methods
-        private void Initialise(IPEndPoint endPoint, bool useSsl)
+        private void Initialise(string serverHost, int serverPort, bool useSsl)
         {
-            this.serverEndPoint = endPoint;
+            this.serverHost = serverHost;
+            this.serverPort = serverPort;
             this.useSsl = useSsl;
             this.canConnect = true;
             this.recvBuffer = new ReceiveBuffer();
@@ -124,16 +109,18 @@ namespace mForex.API
         private async Task SetupClientAndStream()
         {
             tcpClient = new TcpClient();
-            Stream stream = null;
+            Stream tmpStream = null;
 
             try
             {
-                await tcpClient.ConnectAsync(serverEndPoint.Address, serverEndPoint.Port);
+                var addresses = await Dns.GetHostAddressesAsync(this.serverHost);
+                var serverAddress = ChooseAddress(addresses);
+                await tcpClient.ConnectAsync(serverAddress, serverPort);
 
                 tcpClient.LingerState = new LingerOption(false, 0);
                 tcpClient.NoDelay = true;
 
-                stream = tcpClient.GetStream();
+                tmpStream = tcpClient.GetStream();
             }
             catch (Exception exc)
             {
@@ -142,10 +129,10 @@ namespace mForex.API
 
             if (useSsl)
             {
-                var secureStream = new SslStream(stream, false);
+                var secureStream = new SslStream(tmpStream, false);
                 try
                 {
-                    secureStream.AuthenticateAsClient("localhost");
+                    secureStream.AuthenticateAsClient("www.mforex.pl");
                 }
                 catch (Exception exc)
                 {
@@ -156,8 +143,15 @@ namespace mForex.API
             }
             else
             {
-                this.stream = stream;
+                this.stream = tmpStream;
             }
+        }
+
+        private IPAddress ChooseAddress(IPAddress[] addresses)
+        {
+            if (addresses == null || addresses.Length == 0)
+                throw new Exception("Could not resolve host");
+            return addresses[0];
         }
 
         private async void ReadLoop()
@@ -234,8 +228,10 @@ namespace mForex.API
                 OnPacketReceived(dPacket);
             }
         }
-          
-        #region Event Risers        
+        
+  
+        #region Events
+
         private void OnClientDisconnected(Exception exc)
         {
             lock (sendingMutex)
@@ -261,7 +257,6 @@ namespace mForex.API
                 EventHandler.RiseSafely(() => h(packet));
         }                        
       
-        #endregion Event Risers
-        #endregion Private Methods
+        #endregion
     }
 }
