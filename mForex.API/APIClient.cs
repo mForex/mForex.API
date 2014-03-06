@@ -5,10 +5,10 @@ using System.Net;
 using System.Net.Sockets;
 using System.Net.Security;
 using System.IO;
-using mForex.API.Exceptions;
 using System.Threading;
 using mForex.API.Packets;
 using mForex.API.Utils;
+using mForex.API.Exceptions;
 
 namespace mForex.API
 {
@@ -24,8 +24,6 @@ namespace mForex.API
         private ITimer heartBeatTimer;
 
         private Action<APINetworkPacket>[] packetHandlers;
-
-
 
         private IApiConnection apiConnection;
 
@@ -294,7 +292,6 @@ namespace mForex.API
 
             return task;
         }
-
 
         #region Packet Handling
         private void HandlePacket(APINetworkPacket genericPacket)

@@ -1,15 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using mForex.API;
 using Xunit;
 using Xunit.Extensions;
 using Moq;
-using System.Collections.Generic;
-using System.Threading;
-using mForex.API.Exceptions;
+using mForex.API;
 using mForex.API.Packets;
 using mForex.API.Tests.Utils;
-
+using mForex.API.Exceptions;
 
 namespace mForex.API.Tests
 {

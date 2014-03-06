@@ -13,6 +13,9 @@ namespace Console_Trader_0._3
         static void Main(string[] args)
         {
 
+            int login = 0;                  // Enter your login
+            string password = "password";   // Enter your password
+
             InitializeHandler();
 
             client = new APIClient(new APIConnection(ServerType.Demo));
@@ -20,7 +23,7 @@ namespace Console_Trader_0._3
             client.Connect().Wait();
             Console.WriteLine("Connected");
 
-            client.Login(77000005, "Haslo123").ContinueWith(r =>
+            client.Login(login, password).ContinueWith(r =>
             {
                 var resp = r.Result;
                 Console.WriteLine("Login response: {0} - {1}", resp.Login, resp.LoggedIn);
@@ -43,7 +46,7 @@ namespace Console_Trader_0._3
         {
             tradeResponseHandler = (p => { Console.WriteLine("Trade response {0} for order {1}", p.Result.Order, p.Result.ErrorCode); });
         }
-        
+
         private static bool ParseCommand(string[] tokens)
         {
             try

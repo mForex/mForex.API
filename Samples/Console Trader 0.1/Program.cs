@@ -8,13 +8,15 @@ namespace Console_Trader_0._1
     {
         static void Main(string[] args)
         {
-
+            int login = 0;                  // Enter your login
+            string password = "password";   // Enter your password
+            
             var client = new APIClient(new APIConnection(ServerType.Real));
 
             client.Connect().Wait();
             Console.WriteLine("Connected");
 
-            client.Login(77000005, "Haslo123").ContinueWith(r =>
+            client.Login(login, password).ContinueWith(r =>
             {
                 var resp = r.Result;
                 Console.WriteLine("Login response: {0} - {1}", resp.Login, resp.LoggedIn);
@@ -27,15 +29,7 @@ namespace Console_Trader_0._1
                         Console.WriteLine("{0} \t {1}/{2} \t ({3})", tick.Symbol, tick.Bid, tick.Ask, tick.Time);
             };
 
-            WaitForKey();
-        }
-
-        private static void WaitForKey()
-        {
-            while (Console.ReadKey().Key != ConsoleKey.Escape)
-            {
-
-            }
+            Console.ReadKey();
         }
     }
 }
