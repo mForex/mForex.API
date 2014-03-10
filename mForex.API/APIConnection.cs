@@ -47,11 +47,11 @@ namespace mForex.API
             switch (server)
             { 
                 case ServerType.Demo:
-                    Initialise("www.mforex.pl", 6615, true);
+                    Initialise("demo.api.mforex.pl", 5615, true);
                     break;
                 
                 case ServerType.Real:
-                    Initialise("www.mforex.pl", 5615, true);
+                    Initialise("real.api.mforex.pl", 5615, true);
                     break;
             }
         }
@@ -132,7 +132,7 @@ namespace mForex.API
                 var secureStream = new SslStream(tmpStream, false);
                 try
                 {
-                    secureStream.AuthenticateAsClient("mobi.mdm.pl");
+                    secureStream.AuthenticateAsClient(this.serverHost);
                 }
                 catch (Exception exc)
                 {
