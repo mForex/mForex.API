@@ -6,7 +6,7 @@
     <authors>Marcin Deptuła, Wojciech Stokowiec, Kamil Borowski</authors>
     <owners>Dom Maklerski mBanku S.A.</owners>
     <summary>@summary@</summary>
-    <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0.html</licenseUrl>
+    <licenseUrl>https://raw.github.com/mForex/mForex.API/master/LICENSE</licenseUrl>
     <projectUrl>https://github.com/mForex/mForex.API</projectUrl>
     <iconUrl>http://mforex.pl/Media/Default/images/mLogo.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
