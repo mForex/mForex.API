@@ -26,7 +26,7 @@ namespace Console_Trader_0._1
             {
                 foreach (var tick in ticks)
                     if (tick.Symbol == "EURUSD")
-                        Console.WriteLine("{0} \t {1}/{2} \t ({3})", tick.Symbol, tick.Bid, tick.Ask, tick.Time);
+                        Console.WriteLine("{0} \t {1:F5}/{2:F5} \t ({3})", tick.Symbol, tick.Bid, tick.Ask, tick.Time);
             };
 
             Console.ReadKey();
