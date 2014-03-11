@@ -11,7 +11,7 @@ namespace Console_Trader_0._1
             int login = 0;                  // Enter your login
             string password = "password";   // Enter your password
             
-            var client = new APIClient(new APIConnection(ServerType.Real));
+            var client = new APIClient(new APIConnection(ServerType.Demo));
 
             client.Connect().Wait();
             Console.WriteLine("Connected");
