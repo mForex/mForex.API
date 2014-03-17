@@ -1,5 +1,5 @@
 # mForex API
-The goal of mForex APi is to provide flexible, asynchronous programming model for .NET based clients connecting to mForex Trade Server. 
+The goal of mForex API is to provide flexible, asynchronous programming model for .NET based clients connecting to mForex Trade Server. 
 
 We are currently conducting beta tests, so our API is only available on demand for demo accounts only. If you would like to participate, please contact us on <api@mforex.pl>. 
 
