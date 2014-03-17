@@ -62,4 +62,5 @@ If you encounter any bugs or would like to propose any new features or enhanceme
 
 ## Copyright and License
 Copyright 2013 Dom Maklerski mBanku S.A.
+
 Licensed under the [MIT License](https://raw.github.com/mForex/mForex.API/master/LICENSE).
