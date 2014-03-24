@@ -1,9 +1,6 @@
-﻿using mForex.API.Packets;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System;
 using System.Threading.Tasks;
+using mForex.API.Packets;
 
 namespace mForex.API
 {

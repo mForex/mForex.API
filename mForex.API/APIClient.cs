@@ -1,14 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Net;
-using System.Net.Sockets;
-using System.Net.Security;
-using System.IO;
-using System.Threading;
+using mForex.API.Exceptions;
 using mForex.API.Packets;
 using mForex.API.Utils;
-using mForex.API.Exceptions;
 
 namespace mForex.API
 {

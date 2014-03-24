@@ -1,10 +1,4 @@
-﻿using ProtoBuf;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿
 namespace mForex.API
 {
     public enum APINetworkPacketType
@@ -19,6 +13,7 @@ namespace mForex.API
         TradeTransRequest = 9,
         SessionScheduleRequest = 10,
         HeartBeatRequest = 11,
+        AccountSettingsRequest = 12,
 
         LoginResponse = 257,
         CandleResponse = 260,
@@ -29,32 +24,10 @@ namespace mForex.API
         TradeTransResponse = 265,
         SessionScheduleResponse = 266,
         HeartBeatResponse = 267,
+        AccountSettingsResponse = 268,
 
         Ticks = 513,
         MarginLevel = 514,
         TradeUpdate = 515,
-    }
-    
-    [ProtoContract]
-    public enum APIErrorCode
-    {
-        [ProtoEnum]
-        OK = 0,
-        [ProtoEnum]
-        ServerError = 1,
-        [ProtoEnum]
-        UndefinedError = 2,
-        [ProtoEnum]
-        TradeError = 3,
-    }
-
-    public abstract class APINetworkPacket
-    {
-        public APINetworkPacketType Type { get; private set; }
-
-        public APINetworkPacket(APINetworkPacketType type)
-        {
-            Type = type;
-        }
-    }
+    }    
 }
