@@ -330,10 +330,10 @@ namespace mForex.API
             var packet = (LoginResponsePacket)genericPacket;
             var tcs = AcquireTcs<LoginResponsePacket>(packet.RequestId);
 
-            if (packet.LoggedIn)
+            if (packet.LoginStatus==LoginStatus.Successful)
                 tcs.SetResult(packet);
             else
-                tcs.SetException(new AuthenticationException("Invalid credentials"));
+                tcs.SetException(new AuthenticationException("Authentication exception"));
         }
         private void HandleResponsePacket<T>(APINetworkPacket genericPacket) where T : APINetworkPacket, IIdentifiable
         {

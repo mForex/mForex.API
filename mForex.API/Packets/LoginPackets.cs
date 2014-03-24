@@ -14,6 +14,9 @@ namespace mForex.API.Packets
         [ProtoMember(3, IsRequired = true)]
         public string Password { get; set; }
 
+        [ProtoMember(4, IsRequired = true)]        
+        public int ProtocolVersion { get; set; }
+
         public LoginRequestPacket()
             : base(APINetworkPacketType.LoginRequest)
         { }
@@ -37,7 +40,7 @@ namespace mForex.API.Packets
         public int Login { get; set; }
 
         [ProtoMember(3, IsRequired = true)]
-        public bool LoggedIn { get; set; }
+        public LoginStatus LoginStatus { get; set; }
 
         public LoginResponsePacket()
             : base(APINetworkPacketType.LoginResponse)

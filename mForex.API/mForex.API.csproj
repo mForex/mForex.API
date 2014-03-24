@@ -55,6 +55,7 @@
     <Compile Include="Data\Candle.cs" />
     <Compile Include="Enums\APIErrorCode.cs" />
     <Compile Include="Enums\CandlePeriod.cs" />
+    <Compile Include="Enums\LoginStatus.cs" />
     <Compile Include="Enums\MarginMode.cs" />
     <Compile Include="Enums\MarginType.cs" />
     <Compile Include="Enums\ServerType.cs" />

@@ -66,12 +66,12 @@ namespace mForex.API.Tests
             var task = client.Login(login, "Foo");
                         
             moq_connection.Raise(con => con.PacketReceived += null,
-                new LoginResponsePacket() { RequestId = packet.RequestId, Login = login, LoggedIn = true});
+                new LoginResponsePacket() { RequestId = packet.RequestId, Login = login, LoginStatus = LoginStatus.Successful});
 
             var r = await task;
             
             Assert.Equal(login, r.Login);
-            Assert.Equal(true, r.LoggedIn);                        
+            Assert.Equal(LoginStatus.Successful, r.LoginStatus);                        
         }
 
         [Fact]
@@ -87,7 +87,7 @@ namespace mForex.API.Tests
             var task = client.Login(login, "Foo");
 
             moq_connection.Raise(con => con.PacketReceived += null,
-                new LoginResponsePacket() { RequestId = packet.RequestId, Login = login, LoggedIn = false });
+                new LoginResponsePacket() { RequestId = packet.RequestId, Login = login, LoginStatus = LoginStatus.InvalidPassword });
             
             await TaskHelper.ThrowsAsync<AuthenticationException>(async() => await task);
         }
