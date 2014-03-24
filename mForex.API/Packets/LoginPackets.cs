@@ -14,19 +14,24 @@ namespace mForex.API.Packets
         [ProtoMember(3, IsRequired = true)]
         public string Password { get; set; }
 
-        [ProtoMember(4, IsRequired = true)]        
-        public int ProtocolVersion { get; set; }
+        [ProtoMember(4, IsRequired = true)]
+        public int MajorProtocolVersion { get; set; }
+
+        [ProtoMember(5, IsRequired = true)]        
+        public int MinorProtocolVersion { get; set; }
 
         public LoginRequestPacket()
             : base(APINetworkPacketType.LoginRequest)
         { }
 
-        public LoginRequestPacket(int reqId, int login, string password)
+        public LoginRequestPacket(int reqId, int login, string password, int majorVersion, int minorVersion)
             : base(APINetworkPacketType.LoginRequest)
         {
             this.RequestId = reqId;
             this.Login = login;
             this.Password = password;
+            this.MajorProtocolVersion = majorVersion;
+            this.MinorProtocolVersion = minorVersion;
         }
     }
 

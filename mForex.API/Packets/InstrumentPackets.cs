@@ -43,36 +43,7 @@ namespace mForex.API.Packets
     }
 
     #region Instruemnt Settings
-    public enum ProfitCalcMode
-    {
-        Forex = 0,
-        Cfd = 1,
-        Futures = 2
-    }
 
-    public enum MarginCalcMode
-    {
-        Forex = 0,
-        Cfd = 1,
-        Futures = 2,
-        CfdIndex = 3,
-        CfdLeverage = 4
-    }
-
-    public enum SwapType
-    {
-        Points = 0,
-        Dollars = 1,
-        Interest = 2,
-        MarginCurrency = 3
-    }
-
-    public enum TradeMode
-    {
-        No = 0,
-        Close = 1,
-        Full = 2
-    }
     
     [ProtoContract]
     public class InstrumentSettings

@@ -17,6 +17,8 @@ namespace mForex.API
         private Dictionary<int, Type> tcsTypes;
         private object tcsMutex;
         private ITimer heartBeatTimer;
+        private const int majorProtocolVersion = 0;
+        private const int minorProtocolVersion = 97;
 
         private Action<APINetworkPacket>[] packetHandlers;
 
@@ -116,7 +118,7 @@ namespace mForex.API
         public Task<LoginResponsePacket> Login(int login, string password)
         {
             var reqId = GetReqId();
-            var packet = new LoginRequestPacket(reqId, login, password);
+            var packet = new LoginRequestPacket(reqId, login, password, majorProtocolVersion, minorProtocolVersion);
 
             var task = EnqueueTcs<LoginResponsePacket>(reqId);
 

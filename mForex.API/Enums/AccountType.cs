@@ -1,6 +1,6 @@
 ﻿using ProtoBuf;
 
-namespace mForex.API.Packets
+namespace mForex.API
 {
     [ProtoContract]
     public enum AccountType

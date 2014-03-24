@@ -56,12 +56,16 @@
     <Compile Include="Enums\APIErrorCode.cs" />
     <Compile Include="Enums\CandlePeriod.cs" />
     <Compile Include="Enums\LoginStatus.cs" />
+    <Compile Include="Enums\MarginCalcMode.cs" />
     <Compile Include="Enums\MarginMode.cs" />
     <Compile Include="Enums\MarginType.cs" />
+    <Compile Include="Enums\ProfitCalcMode.cs" />
     <Compile Include="Enums\ServerType.cs" />
+    <Compile Include="Enums\SwapType.cs" />
     <Compile Include="Enums\TradeAction.cs" />
     <Compile Include="Enums\TradeCommand.cs" />
     <Compile Include="Enums\TradeErrorCode.cs" />
+    <Compile Include="Enums\TradeMode.cs" />
     <Compile Include="Enums\TransactionType.cs" />
     <Compile Include="Enums\AccountType.cs" />
     <Compile Include="Packets\APINetworkPacket.cs" />
