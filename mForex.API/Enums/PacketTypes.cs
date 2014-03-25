@@ -14,6 +14,7 @@ namespace mForex.API
         SessionScheduleRequest = 10,
         HeartBeatRequest = 11,
         AccountSettingsRequest = 12,
+        TickRegistrationRequest = 13,
 
         LoginResponse = 257,
         CandleResponse = 260,
@@ -25,6 +26,7 @@ namespace mForex.API
         SessionScheduleResponse = 266,
         HeartBeatResponse = 267,
         AccountSettingsResponse = 268,
+        TickRegistrationResponse = 269,
 
         Ticks = 513,
         MarginLevel = 514,

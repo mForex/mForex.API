@@ -3,6 +3,52 @@ using ProtoBuf;
 
 namespace mForex.API.Packets
 {
+
+    [ProtoContract]   
+    public class TickRegistrationRequestPacket : APINetworkPacket
+    {    
+        [ProtoMember(1, IsRequired = true)]
+        public int RequestId { get; private set; }
+
+        [ProtoMember(2, IsRequired = true)]
+        public string Symbol { get; private set; }
+
+        [ProtoMember(3, IsRequired = true)]
+        public RegistrationAction RegistrationAction { get; private set; }
+
+        public TickRegistrationRequestPacket()
+            : base(APINetworkPacketType.TickRegistrationRequest)
+        {
+        }
+    }
+
+    [ProtoContract]
+    public class TickRegistrationResponsePacket : APINetworkPacket
+    {
+        [ProtoMember(1, IsRequired = true)]
+        public int RequestId { get; private set; }
+
+        [ProtoMember(2, IsRequired = true)]
+        public bool Status { get; private set; }
+
+        [ProtoMember(3, IsRequired = true)]
+        public APIErrorCode ErrorCode { get; private set; }
+
+        public TickRegistrationResponsePacket()
+            : base(APINetworkPacketType.TickRegistrationResponse)
+        {
+        }
+
+        public TickRegistrationResponsePacket(int requestId, APIErrorCode errorCode)
+            : base(APINetworkPacketType.TickRegistrationResponse)
+        {
+
+            this.RequestId = requestId;
+            this.Status = errorCode == APIErrorCode.OK;
+            this.ErrorCode = errorCode;
+        }
+    }
+    
     [ProtoContract]
     public class TickPacket : APINetworkPacket
     {
