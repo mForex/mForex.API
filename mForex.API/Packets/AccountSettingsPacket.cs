@@ -35,7 +35,7 @@ namespace mForex.API.Packets
         public APIErrorCode ErrorCode { get; private set; }
 
         [ProtoMember(4, IsRequired = true)]
-        public AccountSettings UserSettings { get; private set; }
+        public AccountSettings AccountSettings { get; private set; }
 
         public AccountSettingsResponsePacket()
             : base(APINetworkPacketType.AccountSettingsResponse)
@@ -57,7 +57,7 @@ namespace mForex.API.Packets
             this.Status = true;
             this.ErrorCode = APIErrorCode.OK;
 
-            this.UserSettings = settings;
+            this.AccountSettings = settings;
         }
     }
 
