@@ -150,7 +150,7 @@ namespace mForex.API
         /// <summary>
         /// Sends request to the server for settings for all available instruments.
         /// </summary>
-        /// <returns>A task that represents instrument settings query process. The value of the result contains returnet packet.</returns>
+        /// <returns>A task that represents instrument settings query process. The task's result contains response packet.</returns>
         public Task<InstrumentSettingsResponsePacket> RequestInstrumentSettings()
         {
             var reqId = GetReqId();
@@ -161,6 +161,23 @@ namespace mForex.API
             apiConnection.SendPacket(packet);
 
             return task;
+        }
+
+        /// <summary>
+        /// Sends request to the server for logged in user account settings
+        /// </summary>
+        /// <returns>A task that represents account settings query process. The task's result contains response packet </returns>
+        public Task<AccountSettingsResponsePacket> RequestAccountSettings()
+        {
+            var reqId = GetReqId();
+            var packet = new AccountSettingsRequestPacket(reqId);
+
+            var task = EnqueueTcs<AccountSettingsResponsePacket>(reqId);
+
+            apiConnection.SendPacket(packet);
+
+            return task;
+        
         }
 
         /// <summary>
@@ -276,7 +293,6 @@ namespace mForex.API
             return task;
         }
 
-
         Task<TradeTransResponsePacket> ITradeProvider.CloseOrder(int orderId, double volume)
         {
             var reqId = GetReqId();
@@ -311,6 +327,7 @@ namespace mForex.API
             packetHandlers[(int)APINetworkPacketType.TradesInfoResponse] = HandleResponsePacket<TradesInfoResponsePacket>;
             packetHandlers[(int)APINetworkPacketType.TradeTransResponse] = HandleResponsePacket<TradeTransResponsePacket>;
             packetHandlers[(int)APINetworkPacketType.HeartBeatResponse] = HandleResponsePacket<HeartBeatResponsePacket>;
+            packetHandlers[(int)APINetworkPacketType.AccountSettingsResponse] = HandleResponsePacket<AccountSettingsResponsePacket>;
         }
         private void HandleMarginLevelPacket(APINetworkPacket genericPacket)
         {

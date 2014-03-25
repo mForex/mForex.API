@@ -22,7 +22,7 @@ namespace mForex.API.Packets
     }
 
     [ProtoContract]
-    public class AccountSettingsResponsePacket : APINetworkPacket
+    public class AccountSettingsResponsePacket : APINetworkPacket, IIdentifiable
     {
     
         [ProtoMember(1, IsRequired = true)]
