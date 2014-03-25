@@ -117,14 +117,18 @@ namespace mForex.API
         /// client was successfully authenticated; or an exception if an authentication failed.</returns>
         public Task<LoginResponsePacket> Login(int login, string password)
         {
-            var reqId = GetReqId();
-            var packet = new LoginRequestPacket(reqId, login, password, majorProtocolVersion, minorProtocolVersion);
+            return HandleRequestPacket<LoginResponsePacket>(reqId => new LoginRequestPacket(reqId, login, password, majorProtocolVersion, minorProtocolVersion));
+        }
 
-            var task = EnqueueTcs<LoginResponsePacket>(reqId);
-
-            apiConnection.SendPacket(packet);
-
-            return task;
+        /// <summary>
+        /// Register for tick stream for a given instrument
+        /// </summary>
+        /// <param name="symbol">Symbol that is being registered for</param>
+        /// <param name="action">Register for/Unregister from streaming</param>
+        /// <returns>A task that represents tick registration process. The value of the result contains returnet packet.</returns>
+        public Task<TickRegistrationResponsePacket> RequestTickRegistration(string symbol, RegistrationAction action)
+        {
+            return HandleRequestPacket<TickRegistrationResponsePacket>(reqId => new TickRegistrationRequestPacket(reqId, symbol, action));
         }
 
         /// <summary>
@@ -137,47 +141,7 @@ namespace mForex.API
         /// <returns>A task that represents candle query process. The value of the result contains returnet packet.</returns>
         public Task<CandleResponsePacket> RequestCandles(string symbol, CandlePeriod period, DateTime from, DateTime to)
         {
-            var reqId = GetReqId();
-            var packet = new CandleRequestPacket(reqId, symbol, period, from, to);
-
-            var task = EnqueueTcs<CandleResponsePacket>(reqId);
-
-            apiConnection.SendPacket(packet);
-
-            return task;
-        }
-
-        /// <summary>
-        /// Sends request to the server for settings for all available instruments.
-        /// </summary>
-        /// <returns>A task that represents instrument settings query process. The task's result contains response packet.</returns>
-        public Task<InstrumentSettingsResponsePacket> RequestInstrumentSettings()
-        {
-            var reqId = GetReqId();
-            var packet = new InstrumentSettingsRequestPacket(reqId);
-
-            var task = EnqueueTcs<InstrumentSettingsResponsePacket>(reqId);
-
-            apiConnection.SendPacket(packet);
-
-            return task;
-        }
-
-        /// <summary>
-        /// Sends request to the server for logged in user account settings
-        /// </summary>
-        /// <returns>A task that represents account settings query process. The task's result contains response packet </returns>
-        public Task<AccountSettingsResponsePacket> RequestAccountSettings()
-        {
-            var reqId = GetReqId();
-            var packet = new AccountSettingsRequestPacket(reqId);
-
-            var task = EnqueueTcs<AccountSettingsResponsePacket>(reqId);
-
-            apiConnection.SendPacket(packet);
-
-            return task;
-        
+            return HandleRequestPacket<CandleResponsePacket>(reqId => new CandleRequestPacket(reqId, symbol, period, from, to));
         }
 
         /// <summary>
@@ -186,30 +150,7 @@ namespace mForex.API
         /// <returns>A task that represents instrument settings query process. The value of the result contains returnet packet.</returns>
         public Task<SessionScheduleResponsePacket> RequestSessions(string symbol)
         {
-            var reqId = GetReqId();
-            var packet = new SessionScheduleRequestPacket(reqId, symbol);
-
-            var task = EnqueueTcs<SessionScheduleResponsePacket>(reqId);
-
-            apiConnection.SendPacket(packet);
-
-            return task;
-        }
-
-        /// <summary>
-        /// Sends request to the server for current margin level.
-        /// </summary>
-        /// <returns>A task that represents margin query process. The value of the result contains returnet packet.</returns>
-        public Task<MarginLevelResponsePacket> RequestMarginLevel()
-        {
-            var reqId = GetReqId();
-            var packet = new MarginLevelRequestPacket(reqId);
-
-            var task = EnqueueTcs<MarginLevelResponsePacket>(reqId);
-
-            apiConnection.SendPacket(packet);
-
-            return task;
+            return HandleRequestPacket<SessionScheduleResponsePacket>(reqId => new SessionScheduleRequestPacket(reqId, symbol));
         }
 
         /// <summary>
@@ -220,14 +161,34 @@ namespace mForex.API
         /// <returns>A task that represents trades history query process. The value of the result contains returnet packet.</returns>
         public Task<ClosedTradesResponsePacket> RequestTradesHistory(DateTime from, DateTime to)
         {
-            var reqId = GetReqId();
-            var packet = new ClosedTradesRequestPacket(reqId, from, to);
+            return HandleRequestPacket<ClosedTradesResponsePacket>(reqId => new ClosedTradesRequestPacket(reqId, from, to));
+        }
 
-            var task = EnqueueTcs<ClosedTradesResponsePacket>(reqId);
+        /// <summary>
+        /// Sends request to the server for settings for all available instruments.
+        /// </summary>
+        /// <returns>A task that represents instrument settings query process. The task's result contains response packet.</returns>
+        public Task<InstrumentSettingsResponsePacket> RequestInstrumentSettings()
+        {
+            return HandleRequestPacket<InstrumentSettingsResponsePacket>(reqId => new InstrumentSettingsRequestPacket(reqId));
+        }
 
-            apiConnection.SendPacket(packet);
+        /// <summary>
+        /// Sends request to the server for logged in user account settings
+        /// </summary>
+        /// <returns>A task that represents account settings query process. The task's result contains response packet </returns>
+        public Task<AccountSettingsResponsePacket> RequestAccountSettings()
+        {
+            return HandleRequestPacket<AccountSettingsResponsePacket>(reqId => new AccountSettingsRequestPacket(reqId));
+        }
 
-            return task;
+        /// <summary>
+        /// Sends request to the server for current margin level.
+        /// </summary>
+        /// <returns>A task that represents margin query process. The value of the result contains returnet packet.</returns>
+        public Task<MarginLevelResponsePacket> RequestMarginLevel()
+        {
+            return HandleRequestPacket<MarginLevelResponsePacket>(reqId => new MarginLevelRequestPacket(reqId));
         }
 
         /// <summary>
@@ -236,14 +197,7 @@ namespace mForex.API
         /// <returns>A task that represents open orders query process. The value of the result contains returnet packet.</returns>
         public Task<TradesInfoResponsePacket> RequestOpenTrades()
         {
-            var reqId = GetReqId();
-            var packet = new TradesInfoRequestPacket(reqId);
-
-            var task = EnqueueTcs<TradesInfoResponsePacket>(reqId);
-
-            apiConnection.SendPacket(packet);
-
-            return task;
+            return HandleRequestPacket<TradesInfoResponsePacket>(reqId => new TradesInfoRequestPacket(reqId));
         }
 
         Task<TradeTransResponsePacket> ITradeProvider.OpenOrder(string symbol, TradeCommand tradeCommand,
@@ -255,42 +209,27 @@ namespace mForex.API
         Task<TradeTransResponsePacket> ITradeProvider.OpenOrder(string symbol, TradeCommand tradeCommand,
                             double price, double stopLoss, double takeProfit, double volume, string comment)
         {
-            var reqId = GetReqId();
-            var packet = new TradeTransRequestPacket(reqId, tradeCommand, TransactionType.OpenOrder,
-                    price, stopLoss, takeProfit, symbol, volume, 0, comment, new DateTime(1970, 1, 1));
+            Func<int, APINetworkPacket> lambda = (reqId =>
+                new TradeTransRequestPacket(reqId, tradeCommand, TransactionType.OpenOrder, price, stopLoss, takeProfit, symbol, volume, 0, comment, new DateTime(1970, 1, 1)));
 
-            var task = EnqueueTcs<TradeTransResponsePacket>(reqId);
-
-            apiConnection.SendPacket(packet);
-
-            return task;
+            return HandleRequestPacket<TradeTransResponsePacket>(lambda);
         }
 
         Task<TradeTransResponsePacket> ITradeProvider.ModifyOrder(int orderId, double newPrice, double newStopLoss,
             double newTakeProfit, double newVolume, DateTime newExpiration)
-        {
-            var reqId = GetReqId();
-            var packet = new TradeTransRequestPacket(reqId, 0, TransactionType.OrderModify,
-                newPrice, newStopLoss, newTakeProfit, "", newVolume, orderId, string.Empty, newExpiration);
+        {            
+            Func<int, APINetworkPacket> lambda = (reqId => 
+                new TradeTransRequestPacket(reqId, 0, TransactionType.OrderModify, newPrice, newStopLoss, newTakeProfit, "", newVolume, orderId, string.Empty, newExpiration));
 
-            var task = EnqueueTcs<TradeTransResponsePacket>(reqId);
-
-            apiConnection.SendPacket(packet);
-
-            return task;
+            return HandleRequestPacket<TradeTransResponsePacket>(lambda);
         }
 
         Task<TradeTransResponsePacket> ITradeProvider.DeleteOrder(int orderId)
-        {
-            var reqId = GetReqId();
-            var packet = new TradeTransRequestPacket(reqId, 0, TransactionType.OrderDelete,
-                0, 0, 0, "", 0, orderId, string.Empty, new DateTime(1970, 1, 1));
+        {         
+            Func<int, APINetworkPacket> lambda = (reqId =>
+                new TradeTransRequestPacket(reqId, 0, TransactionType.OrderDelete,0, 0, 0, "", 0, orderId, string.Empty, new DateTime(1970, 1, 1)));
 
-            var task = EnqueueTcs<TradeTransResponsePacket>(reqId);
-
-            apiConnection.SendPacket(packet);
-
-            return task;
+            return HandleRequestPacket<TradeTransResponsePacket>(lambda);
         }
 
         Task<TradeTransResponsePacket> ITradeProvider.CloseOrder(int orderId, double volume)
@@ -313,6 +252,7 @@ namespace mForex.API
             if (handler != null)
                 handler(genericPacket);
         }
+
         private void InitialiseHandlers()
         {
             packetHandlers[(int)APINetworkPacketType.Ticks] = HandleTicksPacket;
@@ -328,32 +268,50 @@ namespace mForex.API
             packetHandlers[(int)APINetworkPacketType.TradeTransResponse] = HandleResponsePacket<TradeTransResponsePacket>;
             packetHandlers[(int)APINetworkPacketType.HeartBeatResponse] = HandleResponsePacket<HeartBeatResponsePacket>;
             packetHandlers[(int)APINetworkPacketType.AccountSettingsResponse] = HandleResponsePacket<AccountSettingsResponsePacket>;
+            packetHandlers[(int)APINetworkPacketType.TickRegistrationResponse] = HandleResponsePacket<TickRegistrationResponsePacket>;
         }
+
         private void HandleMarginLevelPacket(APINetworkPacket genericPacket)
         {
             var packet = (MarginLevelPacket)genericPacket;
             OnMargin(packet.MarginLevel);
         }
+
         private void HandleTicksPacket(APINetworkPacket genericPacket)
         {
             var packet = (TickPacket)genericPacket;
             OnTicks(packet.Ticks);
         }
+
         private void HandleTradeUpdate(APINetworkPacket genericPacket)
         {
             var packet = (TradeUpdatePacket)genericPacket;
             OnTradeUpdate(packet);
         }
+
         private void HandleLoginResponsePacket(APINetworkPacket genericPacket)
         {
             var packet = (LoginResponsePacket)genericPacket;
             var tcs = AcquireTcs<LoginResponsePacket>(packet.RequestId);
 
-            if (packet.LoginStatus==LoginStatus.Successful)
+            if (packet.LoginStatus == LoginStatus.Successful)
                 tcs.SetResult(packet);
             else
                 tcs.SetException(new AuthenticationException("Authentication exception"));
         }
+
+        private Task<Y> HandleRequestPacket<Y>(Func<int, APINetworkPacket> ctor) where Y : APINetworkPacket
+        {
+            var reqId = GetReqId();
+            var packet = ctor(reqId);
+
+            var task = EnqueueTcs<Y>(reqId);
+
+            apiConnection.SendPacket(packet);
+
+            return task;
+        }
+
         private void HandleResponsePacket<T>(APINetworkPacket genericPacket) where T : APINetworkPacket, IIdentifiable
         {
             var packet = genericPacket as T;

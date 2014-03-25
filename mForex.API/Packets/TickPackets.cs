@@ -18,12 +18,20 @@ namespace mForex.API.Packets
 
         public TickRegistrationRequestPacket()
             : base(APINetworkPacketType.TickRegistrationRequest)
+        {        
+        }
+
+        public TickRegistrationRequestPacket(int requestId, string symbol, RegistrationAction action)
+            : base(APINetworkPacketType.TickRegistrationRequest)
         {
+            this.RequestId = requestId;
+            this.Symbol = symbol;
+            this.RegistrationAction = action;
         }
     }
 
     [ProtoContract]
-    public class TickRegistrationResponsePacket : APINetworkPacket
+    public class TickRegistrationResponsePacket : APINetworkPacket, IIdentifiable
     {
         [ProtoMember(1, IsRequired = true)]
         public int RequestId { get; private set; }
