@@ -101,6 +101,27 @@ namespace mForex.API.Packets
 
         [ProtoMember(17, IsRequired = true)]
         public DateTime Time { get; set; }
+
+        [ProtoMember(18, IsRequired = true)]        
+        public bool Trade { get; set; }
+
+        [ProtoMember(19, IsRequired = true)]        
+        public double LotMin { get; set; }
+        
+        [ProtoMember(20, IsRequired = true)]
+        public double LotMax { get; set; }
+        
+        [ProtoMember(21, IsRequired = true)]
+        public double LotStep { get; set; }
+        
+        [ProtoMember(22, IsRequired = true)]
+        public double Commission { get; set; }
+        
+        [ProtoMember(23, IsRequired = true)]
+        public CommissionType CommissionType { get; set; }
+        
+        [ProtoMember(24, IsRequired = true)]
+        public CommissionLots CommissionLots { get; set; }    
     }
     #endregion Instrument Settings
 }

@@ -55,6 +55,8 @@
     <Compile Include="Data\Candle.cs" />
     <Compile Include="Enums\APIErrorCode.cs" />
     <Compile Include="Enums\CandlePeriod.cs" />
+    <Compile Include="Enums\CommissionLots.cs" />
+    <Compile Include="Enums\CommissionType.cs" />
     <Compile Include="Enums\LoginStatus.cs" />
     <Compile Include="Enums\MarginCalcMode.cs" />
     <Compile Include="Enums\MarginMode.cs" />
