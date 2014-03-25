@@ -8,6 +8,7 @@ using mForex.API;
 using mForex.API.Packets;
 using mForex.API.Tests.Utils;
 using mForex.API.Exceptions;
+using System.Linq.Expressions;
 
 namespace mForex.API.Tests
 {
@@ -47,31 +48,31 @@ namespace mForex.API.Tests
             var client = new APIClient(moq_connection.Object);
             int login = 1;
             string password = "foo";
-        
+
             client.Login(login, password);
-            
-            moq_connection.Verify(con => con.SendPacket(It.Is<LoginRequestPacket>(p => p.Login == login && p.Password == password )));            
+
+            moq_connection.Verify(con => con.SendPacket(It.Is<LoginRequestPacket>(p => p.Login == login && p.Password == password)));
         }
 
         [Fact]
         public async Task LoginResponse_Has_Been_Handled_Properly()
-        {            
+        {
             var client = new APIClient(moq_connection.Object);
             var login = 1;
-            
+
             LoginRequestPacket packet = null;
             moq_connection.Setup(con => con.SendPacket(It.IsAny<LoginRequestPacket>()))
                 .Callback<APINetworkPacket>(x => packet = (LoginRequestPacket)x);
 
             var task = client.Login(login, "Foo");
-                        
+
             moq_connection.Raise(con => con.PacketReceived += null,
-                new LoginResponsePacket() { RequestId = packet.RequestId, Login = login, LoginStatus = LoginStatus.Successful});
+                new LoginResponsePacket() { RequestId = packet.RequestId, Login = login, LoginStatus = LoginStatus.Successful });
 
             var r = await task;
-            
+
             Assert.Equal(login, r.Login);
-            Assert.Equal(LoginStatus.Successful, r.LoginStatus);                        
+            Assert.Equal(LoginStatus.Successful, r.LoginStatus);
         }
 
         [Fact]
@@ -88,80 +89,64 @@ namespace mForex.API.Tests
 
             moq_connection.Raise(con => con.PacketReceived += null,
                 new LoginResponsePacket() { RequestId = packet.RequestId, Login = login, LoginStatus = LoginStatus.InvalidPassword });
-            
-            await TaskHelper.ThrowsAsync<AuthenticationException>(async() => await task);
+
+            await TaskHelper.ThrowsAsync<AuthenticationException>(async () => await task);
         }
 
         [Fact]
         public void Throws_Error_If_ResponsePacket_Is_Not_IIdentifiable()
         {
-            var client = new APIClient(moq_connection.Object);            
-        
-           Assert.Throws<InvalidOperationException>(() =>  moq_connection
-               .Raise(con => con.PacketReceived += null, new CandleResponsePacket() { RequestId = 1 }));        
+            var client = new APIClient(moq_connection.Object);
+
+            Assert.Throws<InvalidOperationException>(() => moq_connection
+                .Raise(con => con.PacketReceived += null, new CandleResponsePacket() { RequestId = 1 }));
         }
 
-        
         [Fact]
         public void CandleRequest_Has_Been_Sent()
         {
-            var client = new APIClient(moq_connection.Object);
-
             var symbol = "EURUSD";
             var period = CandlePeriod.H4;
             var from = DateTime.Now.AddHours(-1);
             var to = DateTime.Now;
 
-            client.RequestCandles(symbol, period, from, to);
-
-            moq_connection.Verify(con => con.SendPacket(It.Is<CandleRequestPacket>(p => p.Symbol == symbol && p.Period == period &&
-                                                                                          p.FromTime == from && p.ToTime == to)));
+            VerifyRequest<CandleRequestPacket>(c => c.RequestCandles(symbol, period, from, to),
+                                                p => p.Symbol == symbol && p.Period == period &&
+                                                     p.FromTime == from && p.ToTime == to);
         }
 
         [Fact]
         public void ClosedTradesRequest_Has_Been_Sent()
         {
-            var client = new APIClient(moq_connection.Object);
-
             var from = DateTime.Now.AddDays(-1);
             var to = DateTime.Now;
 
-            client.RequestTradesHistory(from, to);
-
-            moq_connection.Verify(con => con.SendPacket(It.Is<ClosedTradesRequestPacket>(p => p.DateFrom == from && p.DateTo == to)));
+            VerifyRequest<ClosedTradesRequestPacket>(c => c.RequestTradesHistory(from, to),
+                                                     p => p.DateFrom == from && p.DateTo == to);
         }
 
         [Fact]
         public void InstrumentSettingsRequest_Has_Been_Sent()
         {
-            var client = new APIClient(moq_connection.Object);
-
-            client.RequestInstrumentSettings();
-
-            moq_connection.Verify(con => con.SendPacket(It.IsAny<InstrumentSettingsRequestPacket>()));
-
+            VerifyRequest<InstrumentSettingsRequestPacket>(c => c.RequestInstrumentSettings());
         }
 
         [Fact]
         public void MarginLevelRequest_Has_Been_Sent()
         {
-            var client = new APIClient(moq_connection.Object);
-
-            client.RequestMarginLevel();
-
-            moq_connection.Verify(con => con.SendPacket(It.IsAny<MarginLevelRequestPacket>()));
-
+            VerifyRequest<MarginLevelRequestPacket>(c => c.RequestMarginLevel());
         }
 
         [Fact]
         public void Request_For_Open_Trades_Has_Been_Sent()
         {
-            var client = new APIClient(moq_connection.Object);
+            VerifyRequest<TradesInfoRequestPacket>(c => c.RequestOpenTrades());
+        }
 
-            client.RequestOpenTrades();
-
-            moq_connection.Verify(con => con.SendPacket(It.IsAny<TradesInfoRequestPacket>()));
-
+        [Fact]
+        public void Request_For_AccountSettings_Has_Been_Sent()
+        {
+            VerifyRequest<AccountSettingsRequestPacket>(c => c.RequestAccountSettings());
         }
 
         [Theory]
@@ -171,22 +156,28 @@ namespace mForex.API.Tests
         [InlineData("EURUSD", TradeCommand.Sell, 1.2, 0, 0, 0.1, "valid trade")]
         [InlineData("EURUSD", TradeCommand.SellLimit, 1.2, 0, 0, 0.1, "valid trade")]
         [InlineData("EURUSD", TradeCommand.SellStop, 1.2, 0, 0, 0.1, "valid trade")]
+        [InlineData("EURUSD", TradeCommand.SellStop, 1.2, 0, 0, 0.1, "")]
         public void OpenOrder_Has_Send_The_Right_Packet(string symbol, TradeCommand tradeCommand,
             double price, double stopLoss, double takeProfit, double volume, string comment)
         {
-            var client = new APIClient(moq_connection.Object);
+            
+            Action<APIClient> request_with_comment = c => c.Trade.OpenOrder(symbol, tradeCommand, price, stopLoss, takeProfit, volume, comment);
+            Action<APIClient> request_without_comment = c => c.Trade.OpenOrder(symbol, tradeCommand, price, stopLoss, takeProfit, volume);
+            
+            Expression<Func<TradeTransRequestPacket, bool>> match = p => p.TradeCommand == tradeCommand &&
+                                                                    p.TransactionType == TransactionType.OpenOrder &&
+                                                                    p.Price == price &&
+                                                                    p.StopLoss == stopLoss &&
+                                                                    p.TakeProfit == takeProfit &&
+                                                                    p.Symbol == symbol &&
+                                                                    p.Volume == volume &&
+                                                                    p.Comment == comment &&
+                                                                    p.Expiration == new DateTime(1970, 1, 1);
 
-            client.Trade.OpenOrder(symbol, tradeCommand, price, stopLoss, takeProfit, volume, comment);
-
-            moq_connection.Verify(con => con.SendPacket(It.Is<TradeTransRequestPacket>(p => p.TradeCommand == tradeCommand &&
-                                                                                            p.TransactionType == TransactionType.OpenOrder &&
-                                                                                            p.Price == price &&
-                                                                                            p.StopLoss == stopLoss &&
-                                                                                            p.TakeProfit == takeProfit &&
-                                                                                            p.Symbol == symbol &&
-                                                                                            p.Volume == volume &&
-                                                                                            p.Comment == comment &&
-                                                                                            p.Expiration == new DateTime(1970, 1, 1))));
+            if (comment == String.Empty)
+                VerifyRequest<TradeTransRequestPacket>(request_without_comment, match);
+            else
+                VerifyRequest<TradeTransRequestPacket>(request_with_comment, match);
         }
 
         [Theory]
@@ -194,45 +185,69 @@ namespace mForex.API.Tests
         public void Modify_Has_Send_The_Right_Packet(int orderId, double newPrice, double newStopLoss,
             double newTakeProfit, double newVolume, DateTime newExpiration)
         {
-            var client = new APIClient(moq_connection.Object);
-
-            client.Trade.ModifyOrder(orderId, newPrice, newStopLoss, newTakeProfit, newVolume, newExpiration);
-
-            moq_connection.Verify(con => con.SendPacket(It.Is<TradeTransRequestPacket>(p => p.TransactionType == TransactionType.OrderModify &&
-                                                                                            p.Price == newPrice &&
-                                                                                            p.StopLoss == newStopLoss &&
-                                                                                            p.TakeProfit == newTakeProfit &&
-                                                                                            p.Volume == newVolume &&
-                                                                                            p.Order == orderId &&
-                                                                                            p.Expiration == newExpiration)));
+            VerifyRequest<TradeTransRequestPacket>(c => c.Trade.ModifyOrder(orderId, newPrice, newStopLoss, newTakeProfit, newVolume, newExpiration),
+                                                   p => p.TransactionType == TransactionType.OrderModify &&
+                                                   p.Price == newPrice &&
+                                                   p.StopLoss == newStopLoss &&
+                                                   p.TakeProfit == newTakeProfit &&
+                                                   p.Volume == newVolume &&
+                                                   p.Order == orderId &&
+                                                   p.Expiration == newExpiration);
         }
 
         [Theory]
         [InlineData(1)]
         public void DeleteOrder_Has_Send_The_Right_Packet(int orderId)
         {
-            var client = new APIClient(moq_connection.Object);
-
-            client.Trade.DeleteOrder(orderId);
-
-            moq_connection.Verify(con => con.SendPacket(It.Is<TradeTransRequestPacket>(p => p.TradeCommand == 0 &&
-                                                                                            p.TransactionType == TransactionType.OrderDelete &&
-                                                                                            p.Order == orderId)));
-
+            VerifyRequest<TradeTransRequestPacket>(c => c.Trade.DeleteOrder(orderId),
+                                                   p => p.TradeCommand == 0 &&
+                                                        p.TransactionType == TransactionType.OrderDelete &&
+                                                        p.Order == orderId);
         }
 
         [Theory]
         [InlineData(1, 1)]
         public void CloseOrder_Has_Send_The_Right_Packet(int orderId, double volume)
         {
+
+            VerifyRequest<TradeTransRequestPacket>(c => c.Trade.CloseOrder(orderId, volume),
+                                                   p => p.TradeCommand == 0 && p.TransactionType == TransactionType.OrderClose &&
+                                                        p.Volume == volume && p.Order == orderId);
+        }
+
+        [Theory]
+        [InlineData("EURUSD")]
+        public void RequestSessions_Has_Send_The_Right_Packet(string symbol)
+        {
+            VerifyRequest<SessionScheduleRequestPacket>(c => c.RequestSessions(symbol),
+                                                        p => p.Symbol == symbol);
+        }
+
+        [Theory]
+        [InlineData("EURUSD", RegistrationAction.Register)]
+        [InlineData("USDJPY", RegistrationAction.Unregister)]
+        public void RequestTickRegistration_Has_Send_The_Right_Packet(string symbol, RegistrationAction action)
+        {
+            VerifyRequest<TickRegistrationRequestPacket>(c => c.RequestTickRegistration(symbol, action),
+                                                         p => p.Symbol == symbol  &&
+                                                              p.RegistrationAction == action);
+        }
+        
+        private void VerifyRequest<T>(Action<APIClient> request) where T : APINetworkPacket
+        {
             var client = new APIClient(moq_connection.Object);
 
-            client.Trade.CloseOrder(orderId, volume);
+            request(client);
 
-            moq_connection.Verify(con => con.SendPacket(It.Is<TradeTransRequestPacket>(p => p.TradeCommand == 0 &&
-                                                                                            p.TransactionType == TransactionType.OrderClose &&
-                                                                                            p.Volume == volume &&
-                                                                                            p.Order == orderId)));
+            moq_connection.Verify(con => con.SendPacket(It.IsAny<T>()));
+        }
+        private void VerifyRequest<T>(Action<APIClient> request, Expression<Func<T, bool>> match) where T : APINetworkPacket
+        {
+            var client = new APIClient(moq_connection.Object);
+
+            request(client);
+
+            moq_connection.Verify(con => con.SendPacket(It.Is<T>(match)));
         }
         #endregion Requests Tests
 
@@ -242,8 +257,8 @@ namespace mForex.API.Tests
         {
             List<Tick> receivedTicks = new List<Tick>();
             List<Tick> sentTicks = new List<Tick> { new Tick { Symbol = "EURUSD", Bid = 1, Ask = 2 },
-                                                    new Tick { Symbol = "JPYPLN", Bid = 10, Ask = 11 }};            
-            
+                                                    new Tick { Symbol = "JPYPLN", Bid = 10, Ask = 11 }};
+
             var client = new APIClient(moq_connection.Object);
             client.Ticks += (ticks => { foreach (var tick in ticks) { receivedTicks.Add(tick); } });
 
@@ -257,7 +272,7 @@ namespace mForex.API.Tests
         {
             MarginLevel sentML = new MarginLevel();
             MarginLevel receivedML = null;
-            
+
             var client = new APIClient(moq_connection.Object);
             client.Margin += (ml => receivedML = ml);
 
@@ -286,10 +301,10 @@ namespace mForex.API.Tests
         {
             bool event_rised = false;
             var client = new APIClient(moq_connection.Object);
-            
-            client.Disconnected += ( x => event_rised = true );
-            
-            moq_connection.Raise( con => con.Disconnected += null, new Exception());
+
+            client.Disconnected += (x => event_rised = true);
+
+            moq_connection.Raise(con => con.Disconnected += null, new Exception());
 
             Assert.Equal(true, event_rised);
         }
@@ -301,10 +316,10 @@ namespace mForex.API.Tests
         {
             var moq_timer = new Mock<ITimer>();
             var client = new APIClient(moq_connection.Object, moq_timer.Object);
-            
+
             moq_timer.Verify(t => t.Change(It.IsAny<int>(), It.IsAny<int>()));
         }
-        
+
         [Fact]
         public void HeartBeatRequestPacket_Has_Been_Sent()
         {
@@ -312,7 +327,7 @@ namespace mForex.API.Tests
             var client = new APIClient(moq_connection.Object, moq_timer.Object);
 
             moq_timer.Raise(t => t.Tick += null);
-                        
+
             moq_connection.Verify(con => con.SendPacket(It.IsAny<HeartBeatRequestPacket>()));
         }
         #endregion

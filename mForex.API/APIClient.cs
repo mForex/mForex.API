@@ -179,7 +179,7 @@ namespace mForex.API
         /// <returns>A task that represents account settings query process. The task's result contains response packet </returns>
         public Task<AccountSettingsResponsePacket> RequestAccountSettings()
         {
-            return HandleRequestPacket<AccountSettingsResponsePacket>(reqId => new AccountSettingsRequestPacket(reqId));
+           return HandleRequestPacket<AccountSettingsResponsePacket>(reqId => new AccountSettingsRequestPacket(reqId));          
         }
 
         /// <summary>
