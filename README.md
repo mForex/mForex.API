@@ -26,9 +26,11 @@ var result = await client.Login(login, password);
 ```
 
 ### Requesting for quotes
-Once connection has been established, data stream has been setup and is ready to be registered for. ```APIClient``` provides events which can be subscribed to. For example, to receive and process every incoming tick one could:
+Once connection has been established, all relevant data, but ticks, have been setup and are ready to be registered for. ```APIClient``` provides events which can be subscribed to. However, tick data has to be registered using ```.RequestTickRegistration()``` with ```RegistrationAction.Register``` parameter. For example, to receive and process every incoming tick of EURUSD one could:
 
 ```c#
+client.RequestTickRegistration("EURUSD", RegistrationAction.Register).Wait();
+
 client.Ticks += (Tick[] ticks) =>
     {
         foreach (var tick in ticks)
