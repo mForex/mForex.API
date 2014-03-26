@@ -121,7 +121,7 @@ namespace mForex.API
         }
 
         /// <summary>
-        /// Register for tick stream for a given instrument
+        /// Registers for tick stream for a given instrument
         /// </summary>
         /// <param name="symbol">Symbol that is being registered for</param>
         /// <param name="action">Register for/Unregister from streaming</param>
@@ -174,7 +174,7 @@ namespace mForex.API
         }
 
         /// <summary>
-        /// Sends request to the server for logged in user account settings
+        /// Sends request to the server for logged in user account settings.
         /// </summary>
         /// <returns>A task that represents account settings query process. The task's result contains response packet </returns>
         public Task<AccountSettingsResponsePacket> RequestAccountSettings()
