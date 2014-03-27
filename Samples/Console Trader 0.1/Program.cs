@@ -8,19 +8,20 @@ namespace Console_Trader_0._1
     {
         static void Main(string[] args)
         {
-            int login = 77005000;           // Enter your login
-            string password = "Haslo123";   // Enter your password
-            
+            int login = 0;                  // Enter your login
+            string password = "password";   // Enter your password
+
             var client = new APIClient(new APIConnection(ServerType.Demo));
 
             client.Connect().Wait();
-            Console.WriteLine("Connected");            
+            Console.WriteLine("Connected");
 
             client.Login(login, password).ContinueWith(r =>
                 {
                     var resp = r.Result;
-                    Console.WriteLine("Login response: {0} - {1}", resp.Login, resp.LoggedIn);
-            });
+                    Console.WriteLine("Login response: {0} - {1}", resp.Login, resp.LoginStatus);
+                    client.RequestTickRegistration("EURUSD", RegistrationAction.Register);
+                }).Wait();
 
             client.Ticks += ticks =>
             {
@@ -29,7 +30,7 @@ namespace Console_Trader_0._1
                         Console.WriteLine("{0} \t {1:F5}/{2:F5} \t ({3})", tick.Symbol, tick.Bid, tick.Ask, tick.Time);
             };
 
-            Console.ReadKey();            
+            Console.ReadKey();
         }
     }
 }
