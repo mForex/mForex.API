@@ -26,7 +26,7 @@ namespace Console_Trader_0._3
             client.Login(login, password).ContinueWith(r =>
             {
                 var resp = r.Result;
-                Console.WriteLine("Login response: {0} - {1}", resp.Login, resp.LoggedIn);
+                Console.WriteLine("Login response: {0} - {1}", resp.Login, resp.LoginStatus);
             });
 
             while (true)
