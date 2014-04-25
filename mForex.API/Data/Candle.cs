@@ -7,16 +7,16 @@ namespace mForex.API.Data
     public struct Candle
     {
         [ProtoMember(1, IsRequired = true)]
-        public decimal Open { get; set; }
+        public double Open { get; set; }
 
         [ProtoMember(2, IsRequired = true)]
-        public decimal Close { get; set; }
+        public double Close { get; set; }
 
         [ProtoMember(3, IsRequired = true)]
-        public decimal Low { get; set; }
+        public double Low { get; set; }
 
         [ProtoMember(4, IsRequired = true)]
-        public decimal High { get; set; }
+        public double High { get; set; }
 
         [ProtoMember(5, IsRequired = true)]
         public int Volume { get; set; }
@@ -24,8 +24,8 @@ namespace mForex.API.Data
         [ProtoMember(6, IsRequired = true)]
         public DateTime Time { get; set; }
 
-        public Candle(decimal open, decimal close, decimal low,
-            decimal high, int volume, DateTime time)
+        public Candle(double open, double close, double low,
+            double high, int volume, DateTime time)
             : this()
         {
             Open = open;
@@ -40,7 +40,7 @@ namespace mForex.API.Data
             int highDelta, int volume, DateTime time)
             : this()
         {
-            decimal multiply = (decimal)Math.Pow(0.1, digits);
+            double multiply = Math.Pow(0.1, digits);
 
             Open = multiply * openInPips;
             Close = multiply * (openInPips + closeDelta);
