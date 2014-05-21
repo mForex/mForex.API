@@ -66,3 +66,18 @@ If you encounter any bugs or would like to propose any new features or enhanceme
 Copyright 2013 Dom Maklerski mBanku S.A.
 
 Licensed under the [MIT License](https://raw.github.com/mForex/mForex.API/master/LICENSE).
+
+----------
+> **NOTE:** You can find more information:
+>
+> - about **mForex** services and products [here][1],
+> - about **mForex API for Matlab** [here][2],
+> - about **mForex API for F#** [here][3],
+> - about **mForex API for TypeScript** [here][4],
+
+
+[1]: http://www.mforex.pl/
+[2]: https://github.com/mForex/mForex.API.Matlab
+[3]: https://github.com/mForex/mForex.API.FSharp
+[4]: https://github.com/mForex/mForex.API.TypeScript
+
